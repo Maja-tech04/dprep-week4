@@ -1,6 +1,9 @@
 # Load the data
 
+setwd("/Users/majagrzesik/Desktop/dprep-week4")
+
 library(tidyverse)
+library(dplyr)
 video_view <- read_csv("data/video_view.csv")
 user_view <- read_csv("data/user_view.csv")
 videos <- read_csv("data/videos.csv")
@@ -62,10 +65,42 @@ write_csv(engagement_by_band, "temp/engagement_by_band.csv")
 
 # Exercise 3
 
+video_enriched <- video_features %>%
+  left_join(videos, by = c("video_id", "creator_id")) %>%
+  left_join(creators, by = "creator_id") %>%
+  select(
+    video_id, creator_id, creator_name, impressions_n, watch_rate, watch_rate_rank,
+    quality, posting_rate, publish_time
+  )
 
+user_enriched <- user_view %>%
+  left_join(users, by = "user_id") %>%
+select(
+  user_id, 'user_name.x', 'user_handle.x', impressions_n, watched_n, watch_rate, like_n, follow_n, baseline_login, satiation_decay
+)
+
+write_csv(video_enriched, "temp/video_enriched.csv")
+write_csv(user_enriched, "temp/user_enriched.csv")
 
 # Exercise 4
+watch_log <- impressions %>%
+  left_join(watch_events, by = "impression_id", suffix = c("", ".event")) %>%
+  left_join(sessions, by = c("session_id", "user_id"), suffix = c("", ".session")) %>%
+  left_join(videos, by = c("video_id", "creator_id")) %>%
+  left_join(creators, by = "creator_id")
 
+watched_only <- impressions %>%
+  inner_join(watch_events, by = "impression_id")
 
+creator_event_summary <- watch_log %>%
+  group_by(creator_id) %>%
+  summarise(
+    impressions_n = n(),
+    watched_events_n = sum(!is.na(action)),
+    watch_seconds_total = sum(watch_seconds, na.rm = TRUE)
+  )
 
 # Exercise 5
+
+
+
