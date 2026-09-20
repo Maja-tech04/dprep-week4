@@ -3,3 +3,12 @@
 library(tidyverse)
 
 dir.create("output", showWarnings = FALSE)
+
+creator_week4 <- read_csv("temp/creator_week4.csv")
+
+creator_top10_week4 <- creator_week4 %>%
+  arrange(desc(impressions_total)) %>%
+  slice_head(n = 10)
+write_csv(creator_top10_week4, "output/creator_top10_week4.csv")
+
+write_csv(creator_week4, "temp/creator_week4.csv")

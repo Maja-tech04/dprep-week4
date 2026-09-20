@@ -129,4 +129,7 @@ creator_daily <- creator_daily %>%
 
 write_csv(creator_daily, "temp/creator_daily_week4.csv")
 
+# Exercise 6
+
+
 
